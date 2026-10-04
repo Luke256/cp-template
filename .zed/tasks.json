@@ -5,4 +5,10 @@
     "cwd": "$ZED_WORKTREE_ROOT",
     "save": "all"
   },
+  {
+    "label": "C++20: Expand main.cpp",
+    "command": "make copy",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "save": "all"
+  }
 ]
