@@ -15,7 +15,7 @@ all: run .WAIT verify .WAIT copy
 
 verify: build/main build/expanded
 	@echo -n "Verifying... "
-	@if diff -q <(./build/main < $(INPUT)) <(./build/expanded < $(INPUT)); then \
+	@if diff -q <(./build/main < $(INPUT) 2> /dev/null) <(./build/expanded < $(INPUT) 2> /dev/null); then \
 		echo "OK　(｀･ω･´)"; \
 	else \
 		echo "Failed (´・ω・｀)"; \
@@ -26,7 +26,7 @@ run: build/main
 	@echo "Running..."
 	@./build/main < $(INPUT)
 
-build/main: $(SOURCE) $(HEADERS) build
+build/main: $(SOURCE) $(HEADERS) | build
 	@echo "Compiling $(SOURCE)..."
 	@if ! $(CXX) $(CXXFLAGS) -o build/main $(SOURCE) 2> $(ERRORLOG); then \
 		echo "コンパイルエラーが発生しました"; \
