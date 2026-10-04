@@ -2,7 +2,7 @@ SHELL := /bin/bash
 .PHONY: copy test
 
 CXX = g++-14
-CXXFLAGS = -std=c++20 -Wall -Wextra -O3 -g
+CXXFLAGS = -std=c++20 -Wall -Wextra -O3 -fsanitize=undefined,address -g
 SOURCE = main.cpp
 
 INPUT = in.txt
@@ -13,22 +13,22 @@ HEADERS = $(wildcard lib/*.hpp lib/*/*.hpp)
 
 all: run .WAIT verify .WAIT copy
 
-verify: main build/expanded
+verify: build/main build/expanded
 	@echo -n "Verifying... "
-	@if diff -q <(./main < $(INPUT)) <(./build/expanded < $(INPUT)); then \
+	@if diff -q <(./build/main < $(INPUT)) <(./build/expanded < $(INPUT)); then \
 		echo "OK　(｀･ω･´)"; \
 	else \
 		echo "Failed (´・ω・｀)"; \
 		exit 1; \
 	fi
 
-run: main
+run: build/main
 	@echo "Running..."
-	@./main < $(INPUT)
+	@./build/main < $(INPUT)
 
-main: $(SOURCE) $(HEADERS)
+build/main: $(SOURCE) $(HEADERS) build
 	@echo "Compiling $(SOURCE)..."
-	@if ! $(CXX) $(CXXFLAGS) -o main $(SOURCE) 2> $(ERRORLOG); then \
+	@if ! $(CXX) $(CXXFLAGS) -o build/main $(SOURCE) 2> $(ERRORLOG); then \
 		echo "コンパイルエラーが発生しました"; \
 		exit 1; \
 	fi
@@ -39,18 +39,18 @@ main: $(SOURCE) $(HEADERS)
 		echo "ビルド終了(正常)"; \
 	fi
 
-expanded.cpp: $(SOURCE) $(HEADERS) tools/expand.py
-	@$(PYTHON) tools/expand.py $(SOURCE) -o expanded.cpp
+build/expanded.cpp: $(SOURCE) $(HEADERS) tools/expand.py
+	@$(PYTHON) tools/expand.py $(SOURCE) -o build/expanded.cpp
 
 build:
 	mkdir build
 	
-build/expanded: expanded.cpp | build
+build/expanded: build/expanded.cpp | build
 	@echo "Compiling expanded.cpp..."
-	@$(CXX) $(CXXFLAGS) -o build/expanded expanded.cpp
+	@$(CXX) $(CXXFLAGS) -o build/expanded build/expanded.cpp 2> $(ERRORLOG)
 
-copy: expanded.cpp
-	@xclip -selection clipboard < expanded.cpp
+copy: build/expanded.cpp
+	@xclip -selection clipboard < build/expanded.cpp
 	@echo "Copied to clipboard"
 
 test: build/test-smoke build/test-expanded
@@ -68,8 +68,6 @@ build/test-expanded: build/test-expanded.cpp makefile | build
 	$(CXX) $(CXXFLAGS) -UNDEBUG $< -o $@
 
 clean:
-	rm -f main
-	rm -f expanded.cpp
 	rm -rf build
 	rm -f $(ERRORLOG)
 	rm -rf tests/__pycache__

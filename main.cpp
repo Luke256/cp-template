@@ -8,5 +8,7 @@ using Vec2 = Geometry2D::Vector2D<ll>;
 const Vec2 Angles[] = {{0,1}, {-1,0}, {0,-1}, {1,0}};
 
 int main () {
-    
+    ll a = 1;
+    // a /= 0;
+    cout << a << endl;
 }

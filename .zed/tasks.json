@@ -1,20 +1,8 @@
 [
   {
-    "label": "C++20: Build",
+    "label": "C++20: Build and Run",
     "command": "make",
     "cwd": "$ZED_WORKTREE_ROOT",
     "save": "all"
   },
-  {
-    "label": "C++20: Build & Run",
-    "command": "make && ./Main",
-    "cwd": "$ZED_WORKTREE_ROOT",
-    "save": "all"
-  },
-  {
-    "label": "C++20: Build & Run (in.txt)",
-    "command": "make && ./Main < in.txt",
-    "cwd": "$ZED_WORKTREE_ROOT",
-    "save": "all"
-  }
 ]
