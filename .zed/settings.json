@@ -1,4 +1,7 @@
 {
+  "edit_predictions": {
+    "disabled_globs": ["main.cpp", "..."]
+  },
   "lsp": {
     "clangd": {
       "binary": {
