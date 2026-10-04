@@ -1,0 +1,4 @@
+CompileFlags:
+  Compiler: /usr/bin/g++-13
+  Remove: [-std=*]
+  Add: [-std=gnu++20]
