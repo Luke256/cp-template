@@ -2,3 +2,7 @@ CompileFlags:
   Compiler: /usr/bin/g++-13
   Remove: [-std=*]
   Add: [-std=gnu++20]
+
+Diagnostics:
+  Suppress: [unqualified-std-cast-call]
+  UnusedIncludes: None
