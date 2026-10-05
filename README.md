@@ -6,43 +6,55 @@ AtCoderなどの競技プログラミングで使う、C++20の作業環境と�
 ## 必要な環境
 
 - Bash
-- GNU Make 4.4以上（`.WAIT`を使用）
+- GNU Make
 - GCC / G++（既定のコマンドは`g++-14`）
 - Python 3.9以上（提出用コードの生成とテストに使用）
-- `xclip`と利用可能なX11クリップボード（コピーする場合）
 
 ## 使い方
 
-1. `main.cpp`に解答を書く。
-2. `in.txt`に入力例を書く。
-3. リポジトリのルートで実行する。
+1. リポジトリのルートで、解答を書く環境を用意する。
+
+```bash
+make template  # テンプレートをコピーし、ヘッダーを読み込む短い main.cpp を作成
+```
+
+最初からファイル単体で動作するコードを書く場合は、代わりに次を実行します。
+
+```bash
+make expand    # テンプレートのローカルヘッダーを展開した main.cpp を作成
+```
+
+**`make template`と`make expand`は、現在の`main.cpp`を上書きします。**
+どちらも`tools/template.cpp`から新しく作るコマンドなので、解答を書き始める前に使います。
+
+2. `main.cpp`に解答、`in.txt`に入力例を書く。
+3. コンパイルして実行する。
 
 ```bash
 make
 ```
 
-以下の処理を順番に行います。
+`main.cpp`をコンパイルし、`in.txt`を標準入力として実行します。
 
-1. `main.cpp`をコンパイルし、`in.txt`を標準入力として実行する。
-2. ローカルのヘッダーを展開した`expanded.cpp`を生成・コンパイルする。
-3. 元のプログラムと展開後のプログラムを同じ入力で実行し、標準出力を比較する。
-4. 一致したら`expanded.cpp`をクリップボードにコピーする。
+4. 解答ができたら提出用ファイルを生成する。
+
+```bash
+make submit
+```
 
 AtCoderには生成された`expanded.cpp`の内容を提出します。
-出力比較は、展開前後の動作が`in.txt`で一致することを確認するものです。
-問題の期待出力との比較は行いません。
+`make submit`は現在の`main.cpp`のローカルヘッダーを展開して別ファイルに保存し、
+`main.cpp`は変更しません。すでに展開済みの`main.cpp`にも使えます。
 
 ### 個別に実行する
 
-クリップボードを使えない環境でも、実行・展開・検証を個別に行えます。
-
 | コマンド | 内容 |
 | --- | --- |
-| `make main` | 元のプログラムをコンパイル |
+| `make template` | `tools/template.cpp`をコピーして`main.cpp`を初期化 |
+| `make expand` | `tools/template.cpp`を展開して単体で動作する`main.cpp`を初期化 |
+| `make build/main` | `main.cpp`をコンパイル |
 | `make run` | コンパイルして`in.txt`で実行 |
-| `make expanded.cpp` | 提出用コードを生成 |
-| `make verify` | 元のコードと提出用コードの標準出力を比較 |
-| `make copy` | 提出用コードを生成してクリップボードにコピー |
+| `make submit` / `make expanded.cpp` | 現在の`main.cpp`を展開して`expanded.cpp`に保存 |
 | `make test` | 展開ツールとライブラリのテストを実行 |
 | `make clean` | 実行ファイル・生成コード・ビルド出力・ログ・Pythonキャッシュを削除 |
 
@@ -53,6 +65,7 @@ AtCoderには生成された`expanded.cpp`の内容を提出します。
 ```bash
 make run CXX=g++ INPUT=sample.txt
 make test CXX=g++
+make submit SUBMISSION=build/submit.cpp
 ```
 
 ### 展開ツールを直接使う
@@ -85,16 +98,17 @@ python3 tools/expand.py main.cpp -o expanded.cpp
 ├── main.cpp          # C++の解答を作成するファイル
 ├── main.py           # Pythonの解答用ファイル（makeの対象外）
 ├── in.txt            # ローカル実行用の入力
-├── makefile          # ビルド・実行・展開・検証・コピー
+├── makefile          # 初期化・ビルド・実行・提出用コードの生成
 ├── lib/              # 自作C++ライブラリ
-├── tools/expand.py   # 提出用コードの生成ツール
+├── tools/
+│   ├── template.cpp  # 解答用テンプレート
+│   └── expand.py     # ローカルヘッダーの展開ツール
 ├── tests/            # ライブラリと展開ツールのテスト
 ├── .vscode/          # VS Codeの設定
 └── .zed/             # Zedの設定
 ```
 
-生成される主なファイルは、元の実行ファイル`main`、提出用コード`expanded.cpp`、
-展開後の実行ファイル`build/expanded`です。
+生成される主なファイルは、実行ファイル`build/main`と提出用コード`expanded.cpp`です。
 
 ## テスト
 
@@ -103,4 +117,5 @@ make test
 ```
 
 `tests/test_expand.py`でヘッダー展開とコード整形を確認し、
+`tests/test_makefile.py`で初期化・提出用コードの生成を確認します。
 `tests/smoke.cpp`を元の形と展開後の形の両方でコンパイル・実行します。

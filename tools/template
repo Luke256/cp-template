@@ -1,0 +1,16 @@
+#include <bits/stdc++.h>
+
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+
+#include "lib/all.hpp"
+
+using namespace std;
+
+using mint = modint<MOD2>;
+using Vec2 = Geometry2D::Vector2D<ll>;
+const Vec2 Angles[] = {{0,1}, {-1,0}, {0,-1}, {1,0}};
+
+int main () {
+
+}
