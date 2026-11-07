@@ -28,6 +28,7 @@ submit: $(SUBMISSION)
 
 $(SUBMISSION): $(SOURCE) $(HEADERS) tools/expand.py makefile
 	@$(PYTHON) tools/expand.py "$(SOURCE)" -o "$@"
+	@xclip -selection clipboard "$@"
 
 build/main: $(SOURCE) $(HEADERS) | build
 	@echo "Compiling $(SOURCE)..."
