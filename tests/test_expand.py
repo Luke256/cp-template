@@ -141,6 +141,28 @@ int main() {
             subprocess.run([*CXX, "-std=gnu++20", str(source), "-o", str(binary)], check=True)
             subprocess.run([str(binary)], check=True)
 
+    def test_cli_adds_library_reference_only_once(self):
+        tool = Path(__file__).resolve().parents[1] / "tools/expand.py"
+        reference = "// Library reference: https://github.com/Luke256/cp-template\n"
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "main.cpp"
+            original = '#include "lib/core.hpp"\nint main() {}\n'
+            source.write_text(original, encoding="utf-8")
+            output = root / "submit.cpp"
+            subprocess.run(
+                [sys.executable, str(tool), str(source), "-o", str(output)], check=True,
+            )
+            content = output.read_text(encoding="utf-8")
+            self.assertTrue(content.startswith(reference))
+            self.assertEqual(content.count(reference), 1)
+            self.assertEqual(source.read_text(encoding="utf-8"), original)
+            second = root / "resubmit.cpp"
+            subprocess.run(
+                [sys.executable, str(tool), str(output), "-o", str(second)], check=True,
+            )
+            self.assertEqual(second.read_text(encoding="utf-8"), content)
+
     def test_errors_leave_existing_output_intact(self):
         tool = Path(__file__).resolve().parents[1] / "tools/expand.py"
         with TemporaryDirectory() as directory:

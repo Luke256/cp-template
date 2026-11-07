@@ -189,6 +189,9 @@ def main():
         if args.source.resolve() == args.output.resolve():
             raise ValueError("output must be different from the source")
         content = expand(args.source, Path(__file__).resolve().parent.parent)
+        reference = "// Library reference: https://github.com/Luke256/cp-template\n// meow (^・ω・^)\n"
+        if not content.startswith(reference):
+            content = reference + content
         args.output.parent.mkdir(parents=True, exist_ok=True)
         # Replace the output only after expansion and writing both succeed.
         with TemporaryDirectory(dir=args.output.parent) as directory:
